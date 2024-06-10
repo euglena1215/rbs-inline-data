@@ -1,7 +1,7 @@
 class RbsInlineData::Parser::TypedDefinition
   extend Data::_DataClass
   attr_reader class_name: String
-  attr_reader fields: Array[TypedField]
+  attr_reader fields: Array[RbsInlineData::Parser::TypedField]
   def self.new: (*untyped) -> ::RbsInlineData::Parser::TypedDefinition
               | (**untyped) -> ::RbsInlineData::Parser::TypedDefinition
               | ...

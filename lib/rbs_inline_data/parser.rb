@@ -7,7 +7,7 @@ module RbsInlineData
     # @rbs skip
     TypedDefinition = Data.define(
       :class_name, #:: String
-      :fields #:: Array[TypedField]
+      :fields #:: Array[RbsInlineData::Parser::TypedField]
     )
     # @rbs skip
     TypedField = Data.define(
@@ -79,14 +79,14 @@ module RbsInlineData
     #:: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
     def extract_definition(node)
       source = node.slice
-      _, class_name, field_text = source.match(/\A([a-zA-Z]+) = Data\.define\(([\n\s\w\W]+)\)\z/).to_a
+      _, class_name, field_text = source.match(/\A([a-zA-Z0-9]+) ?= ?Data\.define\(([\n\s\w\W]+)\)\z/).to_a
       return nil if field_text.nil? || class_name.nil?
 
       class_name = "#{@surronding_class_or_module.join("::")}::#{class_name}"
 
       fields = field_text.split("\n").map(&:strip).reject(&:empty?).map do |str|
         case str
-        when /:(\w+),? #:: ([\w\[\]]+)/
+        when /:(\w+),? #:: ([\w\:\[\]]+)/
           [::Regexp.last_match(1), ::Regexp.last_match(2)]
         when /:(\w+),?/
           [::Regexp.last_match(1), "untyped"]
