@@ -1,0 +1,6 @@
+# Generated from lib/rbs_inline_data.rb with RBS::Inline
+
+module RbsInlineData
+  class Error < StandardError
+  end
+end

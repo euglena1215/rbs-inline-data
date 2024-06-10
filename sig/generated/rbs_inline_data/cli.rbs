@@ -1,0 +1,8 @@
+# Generated from lib/rbs_inline_data/cli.rb with RBS::Inline
+
+module RbsInlineData
+  class CLI
+    # :: (Array[String]) -> void
+    def run: (Array[String]) -> void
+  end
+end

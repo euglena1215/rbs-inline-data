@@ -1,0 +1,35 @@
+# Generated from lib/rbs_inline_data/parser.rb with RBS::Inline
+
+module RbsInlineData
+  class Parser
+    class DefineDataVisitor < Prism::Visitor
+      @calls: Array[Prism::Node]
+
+      def initialize: (untyped calls) -> untyped
+
+      # @rbs override
+      def visit_constant_write_node: ...
+
+      private
+
+      # :: (Prism::Node) -> bool
+      def define_data?: (Prism::Node) -> bool
+    end
+
+    @file: Pathname
+
+    # :: (Pathname) -> void
+    def initialize: (Pathname) -> void
+
+    # :: (Pathname) -> Array[RbsInlineData::Parser::TypedDefinition]
+    def self.parse: (Pathname) -> Array[RbsInlineData::Parser::TypedDefinition]
+
+    # :: () -> Array[RbsInlineData::Parser::TypedDefinition]
+    def parse: () -> Array[RbsInlineData::Parser::TypedDefinition]
+
+    private
+
+    # :: (String) -> RbsInlineData::Parser::TypedDefinition?
+    def extract_definition: (String) -> RbsInlineData::Parser::TypedDefinition?
+  end
+end

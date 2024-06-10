@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'rbs_inline_data'
+require 'rbs_inline_data/cli'
+
+RbsInlineData::CLI.new.run(ARGV)

@@ -1,0 +1,18 @@
+# Generated from lib/rbs_inline_data/writer.rb with RBS::Inline
+
+module RbsInlineData
+  class Writer
+    # :: (Pathname, Array[RbsInlineData::Parser::TypedDefinition]) -> void
+    def self.write: (Pathname, Array[RbsInlineData::Parser::TypedDefinition]) -> void
+
+    @file: Pathname
+
+    @definitions: Array[RbsInlineData::Parser::TypedDefinition]
+
+    # :: (Pathname, Array[RbsInlineData::Parser::TypedDefinition]) -> void
+    def initialize: (Pathname, Array[RbsInlineData::Parser::TypedDefinition]) -> void
+
+    # () -> void
+    def write: () -> untyped
+  end
+end
