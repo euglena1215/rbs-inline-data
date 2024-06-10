@@ -23,7 +23,8 @@ module RbsInlineData
       targets.uniq!
 
       targets.each do |file|
-        definitions = Parser.parse(file)
+        result = Prism.parse_file(file.to_s)
+        definitions = Parser.parse(result)
         Writer.write(file, definitions)
       end
     end

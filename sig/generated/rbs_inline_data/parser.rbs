@@ -1,7 +1,7 @@
 # Generated from lib/rbs_inline_data/parser.rb with RBS::Inline
 
 module RbsInlineData
-  class Parser
+  class Parser < Prism::Visitor
     class DefineDataVisitor < Prism::Visitor
       @definitions: Array[RbsInlineData::Parser::TypedDefinition]
 
@@ -30,15 +30,34 @@ module RbsInlineData
       def extract_definition: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
     end
 
-    @file: Pathname
+    @definitions: Array[RbsInlineData::Parser::TypedDefinition]
 
-    # :: (Pathname) -> void
-    def initialize: (Pathname) -> void
+    @surronding_class_or_module: Array[Symbol]
 
-    # :: (Pathname) -> Array[RbsInlineData::Parser::TypedDefinition]
-    def self.parse: (Pathname) -> Array[RbsInlineData::Parser::TypedDefinition]
+    # :: (Array[RbsInlineData::Parser::TypedDefinition]) -> void
+    def initialize: (Array[RbsInlineData::Parser::TypedDefinition]) -> void
 
-    # :: () -> Array[RbsInlineData::Parser::TypedDefinition]
-    def parse: () -> Array[RbsInlineData::Parser::TypedDefinition]
+    # :: (Prism::ParseResult) -> Array[RbsInlineData::Parser::TypedDefinition]
+    def self.parse: (Prism::ParseResult) -> Array[RbsInlineData::Parser::TypedDefinition]
+
+    # @rbs override
+    def visit_class_node: ...
+
+    # @rbs override
+    def visit_module_node: ...
+
+    # @rbs override
+    def visit_constant_write_node: ...
+
+    private
+
+    # :: (Prism::ClassNode | Prism::ModuleNode) { (Prism::ClassNode | Prism::ModuleNode) -> void } -> void
+    def record_surrounding_class_or_module: (Prism::ClassNode | Prism::ModuleNode) { (Prism::ClassNode | Prism::ModuleNode) -> void } -> void
+
+    # :: (Prism::ConstantWriteNode) -> bool
+    def define_data?: (Prism::ConstantWriteNode) -> bool
+
+    # :: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
+    def extract_definition: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
   end
 end
