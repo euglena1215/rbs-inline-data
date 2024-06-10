@@ -15,18 +15,18 @@ namespace :rbs do
   task setup: %i[clean inline inline_data]
 
   task :clean do
-    sh 'rm', '-rf', 'sig/generated'
+    sh "rm", "-rf", "sig/generated"
   end
 
   task :install do
-    sh 'bundle', 'exec', 'rbs', 'install'
+    sh "bundle", "exec", "rbs", "install"
   end
 
   task :inline do
-    sh 'bundle', 'exec', 'rbs-inline', 'lib', '--opt-out', '--output'
+    sh "bundle", "exec", "rbs-inline", "lib", "--opt-out", "--output"
   end
 
   task :inline_data do
-    sh 'bundle', 'exec', 'ruby', 'exe/rbs-inline-data', 'lib'
+    sh "bundle", "exec", "ruby", "exe/rbs-inline-data", "lib", "--output"
   end
 end

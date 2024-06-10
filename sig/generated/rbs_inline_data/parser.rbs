@@ -2,34 +2,6 @@
 
 module RbsInlineData
   class Parser < Prism::Visitor
-    class DefineDataVisitor < Prism::Visitor
-      @definitions: Array[RbsInlineData::Parser::TypedDefinition]
-
-      @surronding_class_or_module: Array[Symbol]
-
-      def initialize: (untyped definitions) -> untyped
-
-      # @rbs override
-      def visit_class_node: ...
-
-      # @rbs override
-      def visit_module_node: ...
-
-      # @rbs override
-      def visit_constant_write_node: ...
-
-      private
-
-      # :: (Prism::ClassNode | Prism::ModuleNode) { (Prism::ClassNode | Prism::ModuleNode) -> void } -> void
-      def record_surrounding_class_or_module: (Prism::ClassNode | Prism::ModuleNode) { (Prism::ClassNode | Prism::ModuleNode) -> void } -> void
-
-      # :: (Prism::ConstantWriteNode) -> bool
-      def define_data?: (Prism::ConstantWriteNode) -> bool
-
-      # :: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
-      def extract_definition: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
-    end
-
     @definitions: Array[RbsInlineData::Parser::TypedDefinition]
 
     @surronding_class_or_module: Array[Symbol]

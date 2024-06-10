@@ -1,16 +1,18 @@
-require 'prism'
+# frozen_string_literal: true
+
+require "prism"
 
 module RbsInlineData
   class Parser < Prism::Visitor
     # @rbs skip
     TypedDefinition = Data.define(
       :class_name, #:: String
-      :fields, #:: Array[TypedField]
+      :fields #:: Array[TypedField]
     )
     # @rbs skip
     TypedField = Data.define(
       :field_name, #:: String
-      :type, #:: String
+      :type #:: String
     )
 
     # @rbs @definitions: Array[RbsInlineData::Parser::TypedDefinition]
@@ -26,7 +28,7 @@ module RbsInlineData
     def self.parse(result)
       # @type var definitions: Array[RbsInlineData::Parser::TypedDefinition]
       definitions = []
-      instance = self.new(definitions)
+      instance = new(definitions)
       result.value.accept(instance)
       definitions
     end
@@ -80,15 +82,25 @@ module RbsInlineData
       _, class_name, field_text = source.match(/\A([a-zA-Z]+) = Data\.define\(([\n\s\w\W]+)\)\z/).to_a
       return nil if field_text.nil? || class_name.nil?
 
-      class_name = @surronding_class_or_module.join("::") + "::" + class_name
+      class_name = "#{@surronding_class_or_module.join("::")}::#{class_name}"
 
-      fields = field_text.split("\n").map(&:strip).map do |str|
-        str.match(/:(\w+), #:: ([\w\[\]]+)/)&.to_a
-      end.compact.map { |_, field_name, type| TypedField.new(field_name: field_name, type: type) }
+      fields = field_text.split("\n").map(&:strip).reject(&:empty?).map do |str|
+        case str
+        when /:(\w+),? #:: ([\w\[\]]+)/
+          [::Regexp.last_match(1), ::Regexp.last_match(2)]
+        when /:(\w+),?/
+          [::Regexp.last_match(1), "untyped"]
+        end
+      end.compact.map do |field_name, type|
+        TypedField.new(
+          field_name: field_name,
+          type: type
+        )
+      end
 
       TypedDefinition.new(
         class_name: class_name,
-        fields: fields,
+        fields: fields
       )
     end
   end

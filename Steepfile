@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 D = Steep::Diagnostic
 
 target :lib do
@@ -5,5 +7,5 @@ target :lib do
 
   check "lib"
 
-  configure_code_diagnostics(D::Ruby.strict)       # `strict` diagnostics setting
+  configure_code_diagnostics(D::Ruby.strict) # `strict` diagnostics setting
 end

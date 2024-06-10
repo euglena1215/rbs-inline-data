@@ -2,17 +2,20 @@
 
 module RbsInlineData
   class Writer
-    # :: (Pathname, Array[RbsInlineData::Parser::TypedDefinition]) -> void
-    def self.write: (Pathname, Array[RbsInlineData::Parser::TypedDefinition]) -> void
-
-    @file: Pathname
+    # :: (Array[RbsInlineData::Parser::TypedDefinition], Pathname?) -> void
+    def self.write: (Array[RbsInlineData::Parser::TypedDefinition], Pathname?) -> void
 
     @definitions: Array[RbsInlineData::Parser::TypedDefinition]
 
-    # :: (Pathname, Array[RbsInlineData::Parser::TypedDefinition]) -> void
-    def initialize: (Pathname, Array[RbsInlineData::Parser::TypedDefinition]) -> void
+    # :: (Array[RbsInlineData::Parser::TypedDefinition]) -> void
+    def initialize: (Array[RbsInlineData::Parser::TypedDefinition]) -> void
 
-    # () -> void
-    def write: () -> untyped
+    # :: (Pathname?) -> void
+    def write: (Pathname?) -> void
+
+    private
+
+    # :: (Array[RbsInlineData::Parser::TypedDefinition]) -> String
+    def build_rbs: (Array[RbsInlineData::Parser::TypedDefinition]) -> String
   end
 end

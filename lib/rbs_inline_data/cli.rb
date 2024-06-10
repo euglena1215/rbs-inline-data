@@ -1,15 +1,22 @@
 # frozen_string_literal: true
 
-require 'rbs_inline_data/parser'
-require 'rbs_inline_data/writer'
+require "optparse"
+
+require "rbs_inline_data/parser"
+require "rbs_inline_data/writer"
 
 module RbsInlineData
   class CLI
     #:: (Array[String]) -> void
     def run(args)
-      unless args.size == 1
-        raise ArgumentError, "Usage: rbs_inline_data <path/file>"
-      end
+      # @type var output_path: Pathname?
+      output_path = nil
+
+      OptionParser.new do |opts|
+        opts.on("--output", "Output to stdout instead of writing to files") do
+          output_path = Pathname("sig/generated/data")
+        end
+      end.parse!(args)
 
       targets = Pathname.glob(args[0]).flat_map do |path|
         if path.directory?
@@ -22,10 +29,10 @@ module RbsInlineData
       targets.sort!
       targets.uniq!
 
-      targets.each do |file|
-        result = Prism.parse_file(file.to_s)
+      targets.each do |target|
+        result = Prism.parse_file(target.to_s)
         definitions = Parser.parse(result)
-        Writer.write(file, definitions)
+        Writer.write(definitions, output_path ? (output_path + target).sub_ext(".rbs") : nil)
       end
     end
   end
