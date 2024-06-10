@@ -3,17 +3,31 @@
 module RbsInlineData
   class Parser
     class DefineDataVisitor < Prism::Visitor
-      @calls: Array[Prism::Node]
+      @definitions: Array[RbsInlineData::Parser::TypedDefinition]
 
-      def initialize: (untyped calls) -> untyped
+      @surronding_class_or_module: Array[Symbol]
+
+      def initialize: (untyped definitions) -> untyped
+
+      # @rbs override
+      def visit_class_node: ...
+
+      # @rbs override
+      def visit_module_node: ...
 
       # @rbs override
       def visit_constant_write_node: ...
 
       private
 
-      # :: (Prism::Node) -> bool
-      def define_data?: (Prism::Node) -> bool
+      # :: (Prism::ClassNode | Prism::ModuleNode) { (Prism::ClassNode | Prism::ModuleNode) -> void } -> void
+      def record_surrounding_class_or_module: (Prism::ClassNode | Prism::ModuleNode) { (Prism::ClassNode | Prism::ModuleNode) -> void } -> void
+
+      # :: (Prism::ConstantWriteNode) -> bool
+      def define_data?: (Prism::ConstantWriteNode) -> bool
+
+      # :: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
+      def extract_definition: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
     end
 
     @file: Pathname
@@ -26,10 +40,5 @@ module RbsInlineData
 
     # :: () -> Array[RbsInlineData::Parser::TypedDefinition]
     def parse: () -> Array[RbsInlineData::Parser::TypedDefinition]
-
-    private
-
-    # :: (String) -> RbsInlineData::Parser::TypedDefinition?
-    def extract_definition: (String) -> RbsInlineData::Parser::TypedDefinition?
   end
 end

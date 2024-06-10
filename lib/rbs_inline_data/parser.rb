@@ -1,24 +1,47 @@
 require 'prism'
-require 'pp'
 
 module RbsInlineData
   class Parser
     class DefineDataVisitor < Prism::Visitor
-      # @rbs @calls: Array[Prism::Node]
+      # @rbs @definitions: Array[RbsInlineData::Parser::TypedDefinition]
+      # @rbs @surronding_class_or_module: Array[Symbol]
 
-      def initialize(calls)
-        @calls = calls
+      def initialize(definitions)
+        @definitions = definitions
+        @surronding_class_or_module = []
+      end
+
+      # @rbs override
+      def visit_class_node(node)
+        record_surrounding_class_or_module(node) { super }
+      end
+
+      # @rbs override
+      def visit_module_node(node)
+        record_surrounding_class_or_module(node) { super }
       end
 
       # @rbs override
       def visit_constant_write_node(node)
-        @calls << node if define_data?(node)
+        if define_data?(node)
+          definition = extract_definition(node)
+          @definitions << definition if definition
+        end
+
         super
       end
 
       private
 
-      #:: (Prism::Node) -> bool
+      #:: (Prism::ClassNode | Prism::ModuleNode) { (Prism::ClassNode | Prism::ModuleNode) -> void } -> void
+      def record_surrounding_class_or_module(node)
+        @surronding_class_or_module.push(node.constant_path.name)
+        yield(node)
+      ensure
+        @surronding_class_or_module.pop
+      end
+
+      #:: (Prism::ConstantWriteNode) -> bool
       def define_data?(node)
         node in {
           value: Prism::CallNode[
@@ -29,6 +52,24 @@ module RbsInlineData
             name: :define,
           ]
         }
+      end
+
+      #:: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
+      def extract_definition(node)
+        source = node.slice
+        _, class_name, field_text = source.match(/\A([a-zA-Z]+) = Data\.define\(([\n\s\w\W]+)\)\z/).to_a
+        return nil if field_text.nil? || class_name.nil?
+
+        class_name = @surronding_class_or_module.join("::") + "::" + class_name
+
+        fields = field_text.split("\n").map(&:strip).map do |str|
+          str.match(/:(\w+), #:: ([\w\[\]]+)/)&.to_a
+        end.compact.map { |_, field_name, type| TypedField.new(field_name: field_name, type: type) }
+
+        TypedDefinition.new(
+          class_name: class_name,
+          fields: fields,
+        )
       end
     end
 
@@ -58,32 +99,11 @@ module RbsInlineData
     #:: () -> Array[RbsInlineData::Parser::TypedDefinition]
     def parse
       result = Prism.parse_file(@file.to_s)
-      program_node = result.value
 
-      # @type var nodes: Array[Prism::Node]
-      nodes = []
-      result.value.accept(DefineDataVisitor.new(nodes))
-
-      nodes.map do |constant_write_node|
-        extract_definition(constant_write_node.slice)
-      end.compact
-    end
-
-    private
-
-    #:: (String) -> RbsInlineData::Parser::TypedDefinition?
-    def extract_definition(source)
-      _, class_name, field_text = source.match(/\A([a-zA-Z]+) = Data\.define\(([\n\s\w\W]+)\)\z/).to_a
-      return nil if field_text.nil?
-
-      fields = field_text.split("\n").map(&:strip).map do |str|
-        str.match(/:(\w+), #:: ([\w\[\]]+)/)&.to_a
-      end.compact.map { |_, field_name, type| TypedField.new(field_name: field_name, type: type) }
-
-      TypedDefinition.new(
-        class_name: class_name,
-        fields: fields,
-      )
+      # @type var definitions: Array[RbsInlineData::Parser::TypedDefinition]
+      definitions = []
+      result.value.accept(DefineDataVisitor.new(definitions))
+      definitions
     end
   end
 end

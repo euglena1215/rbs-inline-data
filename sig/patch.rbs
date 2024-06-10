@@ -1,0 +1,11 @@
+module Prism
+  class ClassNode
+    def constant_path: () -> Prism::ConstantReadNode
+                     | ...
+  end
+
+  class ModuleNode
+    def constant_path: () -> Prism::ConstantReadNode
+                     | ...
+  end
+end
