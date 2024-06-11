@@ -86,7 +86,7 @@ module RbsInlineData
 
       fields = field_text.split("\n").map(&:strip).reject(&:empty?).map do |str|
         case str
-        when /:(\w+),? #:: ([\w\:\[\]]+)/
+        when /:(\w+),? #:: ([\w\:\[\], ]+)/
           [::Regexp.last_match(1), ::Regexp.last_match(2)]
         when /:(\w+),?/
           [::Regexp.last_match(1), "untyped"]
