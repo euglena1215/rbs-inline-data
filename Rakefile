@@ -27,6 +27,6 @@ namespace :rbs do
   end
 
   task :inline_data do
-    sh "bundle", "exec", "ruby", "exe/rbs-inline-data", "lib", "--output"
+    sh "bundle", "exec", "exe/rbs-inline-data", "lib", "--output"
   end
 end
