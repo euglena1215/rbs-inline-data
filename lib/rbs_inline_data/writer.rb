@@ -30,9 +30,8 @@ module RbsInlineData
 
     #:: (Array[RbsInlineData::Parser::TypedDefinition]) -> String
     def build_rbs(definitions)
-      rbs_text = ""
-      definitions.each do |definition|
-        source = <<~RBS
+      definitions.map do |definition|
+        <<~RBS
           class #{definition.class_name}
             extend Data::_DataClass
             #{definition.fields.map { |field| "attr_reader #{field.field_name}: #{field.type}" }.join("\n  ")}
@@ -41,10 +40,7 @@ module RbsInlineData
                         | ...
           end
         RBS
-
-        rbs_text += "#{source}\n"
-      end
-      rbs_text
+      end.join("\n")
     end
   end
 end
