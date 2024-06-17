@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require "rbs_inline_data/parser"
 
@@ -22,13 +24,15 @@ module RbsInlineData
       assert_equal definitions[0], Parser::TypedDefinition.new(
         class_name: "Foo::Bar",
         fields: [
-          Parser::TypedField.new(field_name: "value", type: "String"),
-        ])
+          Parser::TypedField.new(field_name: "value", type: "String")
+        ]
+      )
       assert_equal definitions[1], Parser::TypedDefinition.new(
         class_name: "Foo::Bar2",
         fields: [
-          Parser::TypedField.new(field_name: "value", type: "Integer"),
-        ])
+          Parser::TypedField.new(field_name: "value", type: "Integer")
+        ]
+      )
     end
 
     def test_multiple_definition
@@ -46,13 +50,15 @@ module RbsInlineData
       assert_equal definitions[0], Parser::TypedDefinition.new(
         class_name: "Foo::Bar",
         fields: [
-          Parser::TypedField.new(field_name: "string_value", type: "String"),
-        ])
+          Parser::TypedField.new(field_name: "string_value", type: "String")
+        ]
+      )
       assert_equal definitions[1], Parser::TypedDefinition.new(
         class_name: "Foo::Bar2",
         fields: [
-          Parser::TypedField.new(field_name: "string_value", type: "String"),
-        ])
+          Parser::TypedField.new(field_name: "string_value", type: "String")
+        ]
+      )
     end
 
     def test_untyped
@@ -71,18 +77,21 @@ module RbsInlineData
       assert_equal definitions[0], Parser::TypedDefinition.new(
         class_name: "Foo::Bar",
         fields: [
-          Parser::TypedField.new(field_name: "value", type: "untyped"),
-        ])
+          Parser::TypedField.new(field_name: "value", type: "untyped")
+        ]
+      )
       assert_equal definitions[1], Parser::TypedDefinition.new(
         class_name: "Foo::Bar2",
         fields: [
-          Parser::TypedField.new(field_name: "value", type: "untyped"),
-        ])
+          Parser::TypedField.new(field_name: "value", type: "untyped")
+        ]
+      )
       assert_equal definitions[2], Parser::TypedDefinition.new(
         class_name: "Foo::Bar3",
         fields: [
-          Parser::TypedField.new(field_name: "value", type: "untyped"),
-        ])
+          Parser::TypedField.new(field_name: "value", type: "untyped")
+        ]
+      )
     end
 
     def test_nested_type
@@ -102,8 +111,9 @@ module RbsInlineData
         class_name: "A::B::D",
         fields: [
           Parser::TypedField.new(field_name: "x", type: "A::B::C"),
-          Parser::TypedField.new(field_name: "y", type: "Array[A::B::C]"),
-        ])
+          Parser::TypedField.new(field_name: "y", type: "Array[A::B::C]")
+        ]
+      )
     end
 
     def test_hash_type
@@ -118,8 +128,9 @@ module RbsInlineData
       assert_equal definitions[0], Parser::TypedDefinition.new(
         class_name: "A::B",
         fields: [
-          Parser::TypedField.new(field_name: "x", type: "Hash[Symbol, String]"),
-        ])
+          Parser::TypedField.new(field_name: "x", type: "Hash[Symbol, String]")
+        ]
+      )
     end
   end
 end

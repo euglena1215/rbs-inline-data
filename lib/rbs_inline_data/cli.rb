@@ -6,6 +6,7 @@ require "rbs_inline_data/parser"
 require "rbs_inline_data/writer"
 
 module RbsInlineData
+  # Process executed when running the rbs-inline-data command.
   class CLI
     #:: (Array[String]) -> void
     def run(args)
