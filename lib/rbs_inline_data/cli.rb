@@ -19,22 +19,29 @@ module RbsInlineData
         end
       end.parse!(args)
 
-      targets = Pathname.glob(args[0]).flat_map do |path|
-        if path.directory?
-          Pathname.glob(path.join("**/*.rb").to_s)
+      get_targets(args[0]).each do |target|
+        result = Prism.parse_file(target.to_s)
+        definitions = Parser.parse(result)
+        Writer.write(definitions, output_path ? (output_path + target).sub_ext(".rbs") : nil)
+      end
+    end
+
+    private
+
+    #:: (String) -> Array[Pathname]
+    def get_targets(path)
+      targets = Pathname.glob(path).flat_map do |pathname|
+        if pathname.directory?
+          Pathname.glob(pathname.join("**/*.rb").to_s)
         else
-          path
+          pathname
         end
       end
 
       targets.sort!
       targets.uniq!
 
-      targets.each do |target|
-        result = Prism.parse_file(target.to_s)
-        definitions = Parser.parse(result)
-        Writer.write(definitions, output_path ? (output_path + target).sub_ext(".rbs") : nil)
-      end
+      targets
     end
   end
 end

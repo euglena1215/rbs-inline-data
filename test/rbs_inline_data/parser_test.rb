@@ -132,5 +132,18 @@ module RbsInlineData
         ]
       )
     end
+
+    def test_no_args
+      definitions = Parser.parse(parse_ruby(<<~RUBY))
+        class A
+          B = Data.define
+        end
+      RUBY
+
+      assert_equal definitions[0], Parser::TypedDefinition.new(
+        class_name: "A::B",
+        fields: []
+      )
+    end
   end
 end

@@ -1,5 +1,6 @@
 AllCops:
   TargetRubyVersion: 3.3
+  NewCops: enable
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
@@ -17,3 +18,8 @@ Metrics/ClassLength:
 Metrics/MethodLength:
   Exclude:
     - 'test/**/*'
+  Max: 20
+
+Style/Style/Documentation:
+  Enabled: false
+

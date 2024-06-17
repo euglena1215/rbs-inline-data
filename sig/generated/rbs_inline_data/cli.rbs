@@ -1,8 +1,14 @@
 # Generated from lib/rbs_inline_data/cli.rb with RBS::Inline
 
 module RbsInlineData
+  # Process executed when running the rbs-inline-data command.
   class CLI
     # :: (Array[String]) -> void
     def run: (Array[String]) -> void
+
+    private
+
+    # :: (String) -> Array[Pathname]
+    def get_targets: (String) -> Array[Pathname]
   end
 end

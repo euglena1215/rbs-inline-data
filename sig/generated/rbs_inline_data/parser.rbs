@@ -2,12 +2,22 @@
 
 module RbsInlineData
   class Parser < Prism::Visitor
+    class Comments
+      MARKER: ::String
+
+      # :: (Array[Prism::Comment]) -> RbsInlineData::Parser::Comments
+      def self.from_prism_comments: (Array[Prism::Comment]) -> RbsInlineData::Parser::Comments
+    end
+
     @definitions: Array[RbsInlineData::Parser::TypedDefinition]
 
     @surronding_class_or_module: Array[Symbol]
 
-    # :: (Array[RbsInlineData::Parser::TypedDefinition]) -> void
-    def initialize: (Array[RbsInlineData::Parser::TypedDefinition]) -> void
+    @comments: RbsInlineData::Parser::Comments
+
+    # rubocop:disable Lint/MissingSuper
+    # :: (Array[RbsInlineData::Parser::TypedDefinition], RbsInlineData::Parser::Comments) -> void
+    def initialize: (Array[RbsInlineData::Parser::TypedDefinition], RbsInlineData::Parser::Comments) -> void
 
     # :: (Prism::ParseResult) -> Array[RbsInlineData::Parser::TypedDefinition]
     def self.parse: (Prism::ParseResult) -> Array[RbsInlineData::Parser::TypedDefinition]
@@ -31,5 +41,8 @@ module RbsInlineData
 
     # :: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
     def extract_definition: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
+
+    # :: (Prism::SymbolNode) -> String
+    def type_of: (Prism::SymbolNode) -> String
   end
 end

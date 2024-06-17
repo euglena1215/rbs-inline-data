@@ -8,4 +8,13 @@ module Prism
     def constant_path: () -> Prism::ConstantReadNode
                      | ...
   end
+
+  class Comment
+    def slice: () -> String
+  end
+
+  class ConstantWriteNode
+    def value: () -> CallNode
+             | ...
+  end
 end

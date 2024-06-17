@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "prism"
   spec.add_dependency "rbs"
+  spec.metadata["rubygems_mfa_required"] = "true"
 end
