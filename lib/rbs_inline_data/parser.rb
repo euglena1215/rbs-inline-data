@@ -18,11 +18,13 @@ module RbsInlineData
     # @rbs @definitions: Array[RbsInlineData::Parser::TypedDefinition]
     # @rbs @surronding_class_or_module: Array[Symbol]
 
+    # rubocop:disable Lint/MissingSuper
     #:: (Array[RbsInlineData::Parser::TypedDefinition]) -> void
     def initialize(definitions)
       @definitions = definitions
       @surronding_class_or_module = []
     end
+    # rubocop:enable Lint/MissingSuper
 
     #:: (Prism::ParseResult) -> Array[RbsInlineData::Parser::TypedDefinition]
     def self.parse(result)
@@ -86,21 +88,21 @@ module RbsInlineData
 
       fields = field_text.split("\n").map(&:strip).reject(&:empty?).map do |str|
         case str
-        when /:(\w+),? #:: ([\w\:\[\], ]+)/
+        when /:(\w+),? #:: ([\w:\[\], ]+)/
           [::Regexp.last_match(1), ::Regexp.last_match(2)]
         when /:(\w+),?/
           [::Regexp.last_match(1), "untyped"]
         end
       end.compact.map do |field_name, type|
         TypedField.new(
-          field_name: field_name,
-          type: type
+          field_name:,
+          type:
         )
       end
 
       TypedDefinition.new(
-        class_name: class_name,
-        fields: fields
+        class_name:,
+        fields:
       )
     end
   end
