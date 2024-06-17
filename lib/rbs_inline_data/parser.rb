@@ -14,14 +14,37 @@ module RbsInlineData
       :field_name, #:: String
       :type #:: String
     )
+    # @rbs skip
+    Comments = Data.define(
+      :comment_lines #:: Hash[Integer, String]
+    )
+    class Comments
+      MARKER = "#::"
+
+      #:: (Array[Prism::Comment]) -> RbsInlineData::Parser::Comments
+      def self.from_prism_comments(comments)
+        # @type var comment_lines: Hash[Integer, String]
+        comment_lines = {}
+        comments.each do |comment|
+          sliced = comment.slice
+          next unless sliced.start_with?(MARKER)
+
+          comment_lines[comment.location.start_line] = sliced.sub(MARKER, "").strip
+        end
+
+        new(comment_lines:)
+      end
+    end
 
     # @rbs @definitions: Array[RbsInlineData::Parser::TypedDefinition]
     # @rbs @surronding_class_or_module: Array[Symbol]
+    # @rbs @comments: RbsInlineData::Parser::Comments
 
     # rubocop:disable Lint/MissingSuper
-    #:: (Array[RbsInlineData::Parser::TypedDefinition]) -> void
-    def initialize(definitions)
+    #:: (Array[RbsInlineData::Parser::TypedDefinition], RbsInlineData::Parser::Comments) -> void
+    def initialize(definitions, comments)
       @definitions = definitions
+      @comments = comments
       @surronding_class_or_module = []
     end
     # rubocop:enable Lint/MissingSuper
@@ -30,7 +53,8 @@ module RbsInlineData
     def self.parse(result)
       # @type var definitions: Array[RbsInlineData::Parser::TypedDefinition]
       definitions = []
-      instance = new(definitions)
+      comments = Comments.from_prism_comments(result.comments)
+      instance = new(definitions, comments)
       result.value.accept(instance)
       definitions
     end
@@ -80,30 +104,27 @@ module RbsInlineData
 
     #:: (Prism::ConstantWriteNode) -> RbsInlineData::Parser::TypedDefinition?
     def extract_definition(node)
-      source = node.slice
-      _, class_name, field_text = source.match(/\A([a-zA-Z0-9]+) ?= ?Data\.define\(([\n\s\w\W]+)\)\z/).to_a
-      return nil if field_text.nil? || class_name.nil?
+      arguments_node = node.value.arguments
+      if arguments_node
+        typed_fields = arguments_node.arguments.map do |sym_node|
+          return nil unless sym_node.is_a?(Prism::SymbolNode)
 
-      class_name = "#{@surronding_class_or_module.join("::")}::#{class_name}"
-
-      fields = field_text.split("\n").map(&:strip).reject(&:empty?).map do |str|
-        case str
-        when /:(\w+),? #:: ([\w:\[\], ]+)/
-          [::Regexp.last_match(1), ::Regexp.last_match(2)]
-        when /:(\w+),?/
-          [::Regexp.last_match(1), "untyped"]
-        end
-      end.compact.map do |field_name, type|
-        TypedField.new(
-          field_name:,
-          type:
-        )
+          TypedField.new(
+            field_name: sym_node.unescaped,
+            type: type_of(sym_node)
+          )
+        end.compact
       end
 
       TypedDefinition.new(
-        class_name:,
-        fields:
+        class_name: "#{@surronding_class_or_module.join("::")}::#{node.name}",
+        fields: typed_fields || []
       )
+    end
+
+    #:: (Prism::SymbolNode) -> String
+    def type_of(node)
+      @comments.comment_lines[node.location.start_line] || "untyped"
     end
   end
 end

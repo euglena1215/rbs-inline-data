@@ -15,3 +15,11 @@ class RbsInlineData::Parser::TypedField
               | (**untyped) -> ::RbsInlineData::Parser::TypedField
               | ...
 end
+
+class RbsInlineData::Parser::Comments
+  extend Data::_DataClass
+  attr_reader comment_lines: Hash[Integer, String]
+  def self.new: (*untyped) -> ::RbsInlineData::Parser::Comments
+              | (**untyped) -> ::RbsInlineData::Parser::Comments
+              | ...
+end
